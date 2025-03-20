@@ -12,35 +12,35 @@
 	}
 
 	let { data }: Props = $props();
-	let isLoggingIn: boolean = $state(false);
+	let folksonomyIsLoggingIn: boolean = $state(false);
 
-	let isAuthenticated = $derived($preferences.folksonomy.authToken !== null);
-	let loginStatus: undefined | boolean = $state();
+	let folksonomyIsAuthenticated = $derived($preferences.folksonomy.authToken !== null);
+	let folksonomyLoginStatus: undefined | boolean = $state();
 
-	async function loginToFolksonomy() {
-		isLoggingIn = true;
+	async function folksonomyLogin() {
+		folksonomyIsLoggingIn = true;
 		const username = $preferences.username;
 		const password = $preferences.password;
 		if (username == null || password == null) throw new Error('Username or password is null');
 
 		try {
 			await new FolksonomyApi(fetch).login(username, password);
-			loginStatus = true;
+			folksonomyLoginStatus = true;
 			setTimeout(() => {
-				loginStatus = undefined;
+				folksonomyLoginStatus = undefined;
 			}, 3000);
 		} catch (error) {
 			console.error('Error while logging in', error);
-			loginStatus = false;
+			folksonomyLoginStatus = false;
 			setTimeout(() => {
-				loginStatus = undefined;
+				folksonomyLoginStatus = undefined;
 			}, 3000);
 		} finally {
-			isLoggingIn = false;
+			folksonomyIsLoggingIn = false;
 		}
 	}
 
-	function logout() {
+	function folksonomyLogout() {
 		preferences.update((p) => ({
 			...p,
 			folksonomy: { ...p.folksonomy, authToken: null },
@@ -109,7 +109,7 @@
 
 	<Heading>Login (saved in localStorage) [UNSAFE - DEBUG ONLY]</Heading>
 
-	{#if isAuthenticated}
+	{#if folksonomyIsAuthenticated}
 		<span class="justify-self-start text-sm font-medium md:justify-self-end">Status</span>
 		<div class="flex items-center gap-2">
 			<span class="badge badge-success">
@@ -121,7 +121,7 @@
 		<span class="justify-self-start text-sm font-medium md:justify-self-end">Actions</span>
 		<button
 			class="btn btn-sm btn-outline btn-error w-full md:w-auto"
-			onclick={logout}
+			onclick={folksonomyLogout}
 			transition:fade={{ duration: 200 }}
 		>
 			<span class="icon-[mdi--logout] mr-1 h-4 w-4"></span>
@@ -153,24 +153,26 @@
 		<span class="justify-self-start text-sm font-medium md:justify-self-end">Authentication</span>
 		<div class="flex w-full flex-col gap-2 md:w-auto">
 			<button
-				disabled={$preferences.username == null || $preferences.password == null || isLoggingIn}
+				disabled={$preferences.username == null ||
+					$preferences.password == null ||
+					folksonomyIsLoggingIn}
 				class="btn btn-sm btn-primary w-full"
-				onclick={loginToFolksonomy}
+				onclick={folksonomyLogin}
 				id="login-button"
 			>
-				{#if isLoggingIn}
+				{#if folksonomyIsLoggingIn}
 					<span class="loading loading-spinner loading-xs"></span> Authenticating...
 				{:else}
 					<span class="icon-[mdi--login] mr-1 h-4 w-4"></span> Sign in
 				{/if}
 			</button>
 
-			{#if loginStatus !== undefined}
+			{#if folksonomyLoginStatus !== undefined}
 				<div
-					class="alert {loginStatus ? 'alert-success' : 'alert-error'} px-3 py-2"
+					class="alert {folksonomyLoginStatus ? 'alert-success' : 'alert-error'} px-3 py-2"
 					transition:fade={{ duration: 200 }}
 				>
-					{#if loginStatus}
+					{#if folksonomyLoginStatus}
 						<span class="icon-[mdi--check-circle] h-4 w-4"></span>
 						<span class="text-sm">Success</span>
 					{:else}

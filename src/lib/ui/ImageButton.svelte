@@ -16,8 +16,8 @@
 
 <ImageModal bind:this={modal} />
 
-<div class="relative flex h-full items-center justify-center">
-	<button class="flex max-h-full max-w-full justify-center" {onclick}>
+<div class="relative flex h-full w-full items-center justify-center overflow-hidden">
+	<button class="flex h-full max-w-full justify-center" {onclick}>
 		<img
 			{src}
 			{alt}

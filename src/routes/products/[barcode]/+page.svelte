@@ -187,7 +187,7 @@
 			{/if}
 		</div>
 
-		<div class="flex h-56 grow justify-center">
+		<div class="flex h-56 grow justify-center overflow-hidden">
 			<ImageButton src={product.image_front_url} alt={product.product_name} />
 		</div>
 	</div>

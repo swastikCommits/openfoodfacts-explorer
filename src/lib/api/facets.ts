@@ -2,14 +2,16 @@ import type { KnowledgePanel } from './knowledgepanels';
 import type { FacetSortOption as ProductFacetsSortOption } from '@openfoodfacts/openfoodfacts-nodejs';
 import { createProductsApi } from './product';
 
+// TODO: Remove 'nutriscore_score' workaround once the SDK is updated
+export type FacetSortOption = ProductFacetsSortOption | 'nutriscore_score';
+
 export const FACETS_SORT_OPTIONS = [
 	'last_modified_t',
 	'popularity',
 	'environmental_score_score',
-	'created_t'
-] as const satisfies readonly ProductFacetsSortOption[];
-
-export type FacetSortOption = ProductFacetsSortOption;
+	'created_t',
+	'nutriscore_score'
+] as const satisfies readonly FacetSortOption[];
 
 export async function getFacet(
 	fetch: typeof window.fetch,
@@ -17,7 +19,7 @@ export async function getFacet(
 	opts?: { page?: number; pageSize?: number; sortBy?: FacetSortOption }
 ) {
 	const client = createProductsApi(fetch);
-	return client.getFacet(facet, opts);
+	return client.getFacet(facet, { ...opts, sortBy: opts?.sortBy as ProductFacetsSortOption });
 }
 
 export async function getFacetValue(
@@ -27,7 +29,10 @@ export async function getFacetValue(
 	opts: { page?: number; pageSize?: number; sortBy?: FacetSortOption }
 ) {
 	const client = createProductsApi(fetch);
-	return client.getFacetValue(facet, value, opts);
+	return client.getFacetValue(facet, value, {
+		...opts,
+		sortBy: opts.sortBy as ProductFacetsSortOption
+	});
 }
 
 const FACETS_KP_HOST = 'https://facets-kp.openfoodfacts.org';
